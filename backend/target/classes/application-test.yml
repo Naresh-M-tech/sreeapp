@@ -1,0 +1,19 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/eventbridge_test
+  mail:
+    host: localhost
+    port: 3025
+    username: test
+    password: test
+
+app:
+  jwt:
+    secret: TestSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmUsedInTests
+    access-token-expiration: 3600000
+    refresh-token-expiration: 7200000
+
+logging:
+  level:
+    com.eventbridge: DEBUG

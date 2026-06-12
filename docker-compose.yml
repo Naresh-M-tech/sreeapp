@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: eventbridge-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: eventbridge
+    networks:
+      - eventbridge-network
+
+  backend:
+    build: ./backend
+    container_name: eventbridge-backend
+    ports:
+      - "8085:8080"
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/eventbridge
+      JWT_SECRET: ${JWT_SECRET:-EventBridge2024SuperSecretKeyThatIsAtLeast256BitsLongForHS256Algorithm}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      CORS_ORIGINS: http://localhost:3000,http://localhost:80
+      FRONTEND_URL: http://localhost:3000
+    depends_on:
+      - mongodb
+    networks:
+      - eventbridge-network
+
+  frontend:
+    build: ./frontend
+    container_name: eventbridge-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - eventbridge-network
+
+volumes:
+  mongo_data:
+
+networks:
+  eventbridge-network:
+    driver: bridge
